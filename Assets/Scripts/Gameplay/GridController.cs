@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Gameplay
 {    
@@ -10,9 +11,13 @@ namespace Gameplay
 
         [Header("References")]
         [SerializeField] private GridCell cellPrefab;
+        [SerializeField] private ItemView itemPrefab;
+
+        private GridCell[,] cells;
 
         private void Start()
         {
+            cells = new GridCell[rows, columns];
             GenerateGrid();
         }
 
@@ -22,9 +27,48 @@ namespace Gameplay
             {
                 for (int column = 0; column < columns; column++)
                 {
-                    Instantiate(cellPrefab, transform);
+                    GridCell cell = Instantiate(cellPrefab, transform);
+                    cells[row, column] = cell;
                 }
             }
+        }
+
+        public void SpawnRandomItem()
+        {
+            GridCell cell = GetRandomFreeCell();
+
+            if (cell == null)
+            {
+                return;
+            }
+
+            ItemView item = Instantiate(itemPrefab, cell.transform);
+            cell.SetItem(item);
+        }
+
+        private GridCell GetRandomFreeCell()
+        {
+            List<GridCell> freeCells = new();
+
+            for (int row = 0; row < rows; row++)
+            {
+                for (int column = 0; column < columns; column++)
+                {
+                    GridCell cell = cells[row, column];
+
+                    if (!cell.IsOcupied)
+                    {
+                        freeCells.Add(cell);
+                    }
+                }
+            }
+            
+            if (freeCells.Count == 0)
+            {
+                return null;
+            }
+
+            return freeCells[Random.Range(0, freeCells.Count)];
         }
     }
 }
