@@ -12,6 +12,7 @@ namespace Gameplay
         [Header("References")]
         [SerializeField] private GridCell cellPrefab;
         [SerializeField] private ItemView itemPrefab;
+        [SerializeField] private RectTransform canvasRect;
 
         private GridCell[,] cells;
 
@@ -44,6 +45,7 @@ namespace Gameplay
 
             ItemView item = Instantiate(itemPrefab, cell.transform);
             cell.SetItem(item);
+            item.SetCell(cell, canvasRect);
         }
 
         private GridCell GetRandomFreeCell()
@@ -56,7 +58,7 @@ namespace Gameplay
                 {
                     GridCell cell = cells[row, column];
 
-                    if (!cell.IsOcupied)
+                    if (!cell.IsOccupied)
                     {
                         freeCells.Add(cell);
                     }
