@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using DG.Tweening;
 
 namespace Gameplay
 {
@@ -17,12 +18,14 @@ namespace Gameplay
 
         private Vector2 localPoint;
         private Vector2 dragOffset;
+        private GridController gridController;
 
         private readonly MergeHandler mergeHandler = new();
 
-        public void Initialize(RectTransform canvasRect)
+        public void Initialize(RectTransform canvasRect, GridController gridController)
         {
             this.canvasRect = canvasRect;
+            this.gridController = gridController;
         }
 
         private void Awake()
@@ -32,6 +35,11 @@ namespace Gameplay
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            if (gridController.IsAnimating)
+            {
+                return;
+            }
+
             originalCell.ClearItem();
             transform.SetParent(canvasRect);
             transform.SetAsLastSibling();
@@ -67,7 +75,7 @@ namespace Gameplay
 
             if (targetCell != null && targetCell.IsOccupied)
             {
-                ItemData result = mergeHandler.TryMerge(itemView.Data, targetCell.Item.Data);
+                ItemData result = mergeHandler.TryMergeAndGetResult(itemView.Data, targetCell.Item.Data);
 
                 if (result != null) {
                     MergeItems(targetCell, result);
@@ -114,9 +122,33 @@ namespace Gameplay
 
         private void MergeItems(GridCell targetCell, ItemData result)
         {
-            targetCell.Item.SetData(result);
-            Destroy(gameObject);
-            Debug.Log(result);//!!
+            gridController.BeginAnimation();
+
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(
+                transform.DOMove(
+                    targetCell.Item.transform.position,
+                    0.1f
+                )
+            );
+            sequence.Append(
+                transform.DOScale(Vector3.zero, 0.1f)
+            );
+            sequence.AppendCallback(() =>
+            {
+                targetCell.Item.SetData(result);
+                Destroy(gameObject);
+            });
+            sequence.Append(
+                targetCell.Item.transform.DOScale(Vector3.one * 1.5f, 0.1f)
+            );
+            sequence.Append(
+                targetCell.Item.transform.DOScale(Vector3.one, 0.1f)
+            );
+            sequence.OnComplete(() =>
+            {
+                gridController.EndAnimation();
+            });
         }
     }
 }

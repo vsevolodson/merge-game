@@ -2,7 +2,7 @@ namespace Gameplay
 {
     public class MergeHandler
     {
-        public ItemData TryMerge(ItemData first, ItemData second)
+        public ItemData TryMergeAndGetResult(ItemData first, ItemData second)
         {
             if (first == null || second == null)
             {

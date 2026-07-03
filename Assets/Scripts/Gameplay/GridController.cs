@@ -16,6 +16,9 @@ namespace Gameplay
         [SerializeField] private ItemData startItem;
 
         private GridCell[,] cells;
+        private bool isAnimating;
+
+        public bool IsAnimating => isAnimating;
 
         private void Start()
         {
@@ -48,7 +51,7 @@ namespace Gameplay
             DragHandler dragHandler = item.GetComponent<DragHandler>();
 
             item.Initialize(startItem);
-            dragHandler.Initialize(canvasRect);
+            dragHandler.Initialize(canvasRect, this);
 
             cell.SetItem(item);
             dragHandler.SetCell(cell);
@@ -77,6 +80,16 @@ namespace Gameplay
             }
 
             return freeCells[Random.Range(0, freeCells.Count)];
+        }
+
+        public void BeginAnimation()
+        {
+            isAnimating = true;
+        }
+
+        public void EndAnimation()
+        {
+            isAnimating = false;
         }
     }
 }
