@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 namespace Gameplay
 {
@@ -14,6 +15,17 @@ namespace Gameplay
         private RectTransform canvasRect;
         private Vector2 localPoint;
         private Vector2 dragOffset;
+        private ItemData itemData;
+
+        [SerializeField] private Image iconImage;
+
+        public ItemData Data => itemData;
+
+        public void Initialize(RectTransform canvasRect, ItemData itemData)
+        {
+            this.canvasRect = canvasRect;
+            SetData(itemData);
+        }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
@@ -59,10 +71,9 @@ namespace Gameplay
             ReturnToOriginalCell();
         }
 
-        public void SetCell(GridCell cell, RectTransform canvasRect)
+        public void SetCell(GridCell cell)
         {
             originalCell = cell;
-            this.canvasRect = canvasRect;
         }
 
         private Vector2 GetLocalPointerPosition(PointerEventData eventData)
@@ -83,7 +94,7 @@ namespace Gameplay
             ((RectTransform)transform).anchoredPosition = Vector2.zero;
 
             targetCell.SetItem(this);
-            originalCell = targetCell;
+            SetCell(targetCell);
         }
 
         private void ReturnToOriginalCell()
@@ -92,6 +103,17 @@ namespace Gameplay
             ((RectTransform)transform).anchoredPosition = Vector2.zero;
 
             originalCell.SetItem(this);
+        }
+
+        private void RefreshView()
+        {
+            iconImage.sprite = itemData.Icon;
+        }
+
+        public void SetData(ItemData itemData)
+        {
+            this.itemData = itemData;
+            RefreshView();
         }
     }
 }

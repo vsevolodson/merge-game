@@ -7,6 +7,7 @@ namespace Gameplay
         [SerializeField] private ItemView currentItem;
 
         public bool IsOccupied => currentItem != null;
+        public ItemView CurrentItem => currentItem;
 
         public void SetItem(ItemView item)
         {

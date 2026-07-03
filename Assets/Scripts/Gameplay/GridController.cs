@@ -13,6 +13,7 @@ namespace Gameplay
         [SerializeField] private GridCell cellPrefab;
         [SerializeField] private ItemView itemPrefab;
         [SerializeField] private RectTransform canvasRect;
+        [SerializeField] private ItemData startItem;
 
         private GridCell[,] cells;
 
@@ -44,8 +45,11 @@ namespace Gameplay
             }
 
             ItemView item = Instantiate(itemPrefab, cell.transform);
+
+            item.Initialize(canvasRect, startItem);
+
             cell.SetItem(item);
-            item.SetCell(cell, canvasRect);
+            item.SetCell(cell);
         }
 
         private GridCell GetRandomFreeCell()
