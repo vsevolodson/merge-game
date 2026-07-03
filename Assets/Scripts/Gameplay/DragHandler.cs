@@ -19,6 +19,7 @@ namespace Gameplay
         private Vector2 localPoint;
         private Vector2 dragOffset;
         private GridController gridController;
+        private Sequence sequence;
 
         private readonly MergeHandler mergeHandler = new();
 
@@ -50,12 +51,22 @@ namespace Gameplay
 
         public void OnDrag(PointerEventData eventData)
         {
+            if (gridController.IsAnimating)
+            {
+                return;
+            }
+
             localPoint = GetLocalPointerPosition(eventData);
             ((RectTransform)transform).anchoredPosition = localPoint + dragOffset;
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            if (gridController.IsAnimating)
+            {
+                return;
+            }
+
             List<RaycastResult> results = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventData, results);
 
@@ -124,7 +135,7 @@ namespace Gameplay
         {
             gridController.BeginAnimation();
 
-            Sequence sequence = DOTween.Sequence();
+            sequence = DOTween.Sequence();
             sequence.Append(
                 transform.DOMove(
                     targetCell.Item.transform.position,
@@ -137,7 +148,6 @@ namespace Gameplay
             sequence.AppendCallback(() =>
             {
                 targetCell.Item.SetData(result);
-                Destroy(gameObject);
             });
             sequence.Append(
                 targetCell.Item.transform.DOScale(Vector3.one * 1.5f, 0.1f)
@@ -148,7 +158,14 @@ namespace Gameplay
             sequence.OnComplete(() =>
             {
                 gridController.EndAnimation();
+                Destroy(gameObject);
             });
+        }
+
+        private void OnDestroy()
+        {
+            gridController.EndAnimation();
+            sequence?.Kill();
         }
     }
 }
