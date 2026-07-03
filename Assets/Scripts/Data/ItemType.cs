@@ -1,4 +1,4 @@
-namespace Data
+namespace Gameplay
 {
     public enum ItemType
     {

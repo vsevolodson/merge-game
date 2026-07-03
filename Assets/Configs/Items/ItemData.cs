@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace Data
+namespace Gameplay
 {
     [CreateAssetMenu(fileName = "ItemData", menuName = "Scriptable Objects/ItemData")]
     public class ItemData : ScriptableObject
@@ -11,7 +11,9 @@ namespace Data
         [SerializeField] private int level;
 
         [SerializeField] private ItemData nextLevel;
+        [SerializeField] private ItemType type;
 
+        public ItemType Type => type;
         public Sprite Icon => icon;
         public int Level => level;
         public ItemData NextLevel => nextLevel;

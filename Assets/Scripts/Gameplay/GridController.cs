@@ -45,11 +45,13 @@ namespace Gameplay
             }
 
             ItemView item = Instantiate(itemPrefab, cell.transform);
+            DragHandler dragHandler = item.GetComponent<DragHandler>();
 
-            item.Initialize(canvasRect, startItem);
+            item.Initialize(startItem);
+            dragHandler.Initialize(canvasRect);
 
             cell.SetItem(item);
-            item.SetCell(cell);
+            dragHandler.SetCell(cell);
         }
 
         private GridCell GetRandomFreeCell()
