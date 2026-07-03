@@ -19,7 +19,7 @@ namespace Gameplay
 
         private void RefreshView()
         {
-            //!!iconImage.sprite = itemData.Icon;
+            iconImage.sprite = itemData.Icon;
         }
 
         public void SetData(ItemData itemData)

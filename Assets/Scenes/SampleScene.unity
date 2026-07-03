@@ -501,6 +501,7 @@ MonoBehaviour:
   cellPrefab: {fileID: -1355243573299292850, guid: 7660b6719b6d695408b1933d69e9578d, type: 3}
   itemPrefab: {fileID: 6473548299649467213, guid: f374eb4c817337341a58fa2c08a3e61a, type: 3}
   canvasRect: {fileID: 1931008745}
+  startItem: {fileID: 11400000, guid: 1932f2ca41842e34b88cc4ab9499dae3, type: 2}
 --- !u!1 &1931008741
 GameObject:
   m_ObjectHideFlags: 0

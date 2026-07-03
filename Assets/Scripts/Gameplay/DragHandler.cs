@@ -18,6 +18,8 @@ namespace Gameplay
         private Vector2 localPoint;
         private Vector2 dragOffset;
 
+        private readonly MergeHandler mergeHandler = new();
+
         public void Initialize(RectTransform canvasRect)
         {
             this.canvasRect = canvasRect;
@@ -65,8 +67,12 @@ namespace Gameplay
 
             if (targetCell != null && targetCell.IsOccupied)
             {
-                ReturnToOriginalCell();
-                return;
+                ItemData result = mergeHandler.TryMerge(itemView.Data, targetCell.Item.Data);
+
+                if (result != null) {
+                    MergeItems(targetCell, result);
+                    return;
+                }
             }
 
             ReturnToOriginalCell();
@@ -104,6 +110,13 @@ namespace Gameplay
             ((RectTransform)transform).anchoredPosition = Vector2.zero;
 
             originalCell.SetItem(itemView);
+        }
+
+        private void MergeItems(GridCell targetCell, ItemData result)
+        {
+            targetCell.Item.SetData(result);
+            Destroy(gameObject);
+            Debug.Log(result);//!!
         }
     }
 }

@@ -2,6 +2,7 @@ namespace Gameplay
 {
     public enum ItemType
     {
-        type1
+        type1,
+        type2
     }
 }

@@ -89,7 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7321c743b8fb5bc4881313c3f7a20fa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gameplay.ItemView
-  iconImage: {fileID: 0}
+  iconImage: {fileID: 111236326138555439}
 --- !u!114 &-9218885323206760142
 MonoBehaviour:
   m_ObjectHideFlags: 0
