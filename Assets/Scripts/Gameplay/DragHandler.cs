@@ -11,6 +11,8 @@ namespace Gameplay
         IDragHandler,
         IEndDragHandler
     {
+        private MergeHandler mergeHandler;
+
         private ItemView itemView;
 
         private GridCell originalCell;
@@ -20,29 +22,22 @@ namespace Gameplay
         private Vector2 dragOffset;
         private GridController gridController;
         private Sequence sequence;
-        private Animator animator;
-
-        private readonly MergeHandler mergeHandler = new();
 
         public void Initialize(RectTransform canvasRect, GridController gridController, Animator animator)
         {
             this.canvasRect = canvasRect;
             this.gridController = gridController;
-            this.animator = animator;
+            mergeHandler.Initialize(animator);
         }
 
         private void Awake()
         {
             itemView = GetComponent<ItemView>();
+            mergeHandler = GetComponent<MergeHandler>();
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (gridController.IsAnimating)
-            {
-                return;
-            }
-
             originalCell.ClearItem();
             transform.SetParent(canvasRect);
             transform.SetAsLastSibling();
@@ -53,22 +48,12 @@ namespace Gameplay
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (gridController.IsAnimating)
-            {
-                return;
-            }
-
             localPoint = GetLocalPointerPosition(eventData);
             ((RectTransform)transform).anchoredPosition = localPoint + dragOffset;
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (gridController.IsAnimating)
-            {
-                return;
-            }
-
             List<RaycastResult> results = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventData, results);
 
@@ -91,7 +76,7 @@ namespace Gameplay
                 ItemData result = mergeHandler.TryMergeAndGetResult(itemView.Data, targetCell.Item.Data);
 
                 if (result != null) {
-                    MergeItems(targetCell, result);
+                    mergeHandler.MergeItems(targetCell, result);
                     return;
                 }
             }
@@ -131,16 +116,6 @@ namespace Gameplay
             ((RectTransform)transform).anchoredPosition = Vector2.zero;
 
             originalCell.SetItem(itemView);
-        }
-
-        private void MergeItems(GridCell targetCell, ItemData result)
-        {
-            animator.PlayMerge(
-                GetComponent<ItemView>(),
-                targetCell.Item,
-                () => { targetCell.Item.SetData(result); },
-                () => { Destroy(gameObject); }
-            );
         }
 
         private void OnDestroy()

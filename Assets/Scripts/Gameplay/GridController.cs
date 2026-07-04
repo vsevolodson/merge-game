@@ -19,12 +19,14 @@ namespace Gameplay
         private GridCell[,] cells;
         private bool isAnimating;
         private Animator animator;
+        private CanvasGroup group;
 
         public bool IsAnimating => isAnimating;
 
         private void Awake()
         {
             animator = GetComponent<Animator>();
+            group = GetComponent<CanvasGroup>();
         }
 
         private void Start()
@@ -92,11 +94,16 @@ namespace Gameplay
         public void BeginAnimation()
         {
             isAnimating = true;
+            group.interactable = false;
+            group.blocksRaycasts = false;
         }
 
         public void EndAnimation()
         {
             isAnimating = false;
+            
+            group.interactable = true;
+            group.blocksRaycasts = true;
         }
     }
 }
