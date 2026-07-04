@@ -3,125 +3,122 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using DG.Tweening;
 
-namespace Gameplay
+public class DragHandler :
+    MonoBehaviour,
+    IBeginDragHandler,
+    IDragHandler,
+    IEndDragHandler
 {
-    public class DragHandler :
-        MonoBehaviour,
-        IBeginDragHandler,
-        IDragHandler,
-        IEndDragHandler
+    private MergeHandler mergeHandler;
+
+    private ItemView itemView;
+
+    private GridCell originalCell;
+    private RectTransform canvasRect;
+
+    private Vector2 localPoint;
+    private Vector2 dragOffset;
+    private GridController gridController;
+    private Sequence sequence;
+
+    public void Initialize(RectTransform canvasRect, GridController gridController, AnimatorHandler animator)
     {
-        private MergeHandler mergeHandler;
+        this.canvasRect = canvasRect;
+        this.gridController = gridController;
+        mergeHandler.Initialize(animator);
+    }
 
-        private ItemView itemView;
+    private void Awake()
+    {
+        itemView = GetComponent<ItemView>();
+        mergeHandler = GetComponent<MergeHandler>();
+    }
 
-        private GridCell originalCell;
-        private RectTransform canvasRect;
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        originalCell.ClearItem();
+        transform.SetParent(canvasRect);
+        transform.SetAsLastSibling();
 
-        private Vector2 localPoint;
-        private Vector2 dragOffset;
-        private GridController gridController;
-        private Sequence sequence;
+        localPoint = GetLocalPointerPosition(eventData);
+        dragOffset = ((RectTransform)transform).anchoredPosition - localPoint;
+    }
 
-        public void Initialize(RectTransform canvasRect, GridController gridController, Animator animator)
+    public void OnDrag(PointerEventData eventData)
+    {
+        localPoint = GetLocalPointerPosition(eventData);
+        ((RectTransform)transform).anchoredPosition = localPoint + dragOffset;
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+
+        GridCell targetCell = null;
+        foreach (var result in results)
         {
-            this.canvasRect = canvasRect;
-            this.gridController = gridController;
-            mergeHandler.Initialize(animator);
+            targetCell = result.gameObject.GetComponent<GridCell>();
+
+            if (targetCell != null) break;
         }
 
-        private void Awake()
+        if (targetCell != null && !targetCell.IsOccupied)
         {
-            itemView = GetComponent<ItemView>();
-            mergeHandler = GetComponent<MergeHandler>();
+            PlaceToCell(targetCell);
+            return;
         }
 
-        public void OnBeginDrag(PointerEventData eventData)
+        if (targetCell != null && targetCell.IsOccupied)
         {
-            originalCell.ClearItem();
-            transform.SetParent(canvasRect);
-            transform.SetAsLastSibling();
+            ItemData result = mergeHandler.TryMergeAndGetResult(itemView.Data, targetCell.Item.Data);
 
-            localPoint = GetLocalPointerPosition(eventData);
-            dragOffset = ((RectTransform)transform).anchoredPosition - localPoint;
-        }
-
-        public void OnDrag(PointerEventData eventData)
-        {
-            localPoint = GetLocalPointerPosition(eventData);
-            ((RectTransform)transform).anchoredPosition = localPoint + dragOffset;
-        }
-
-        public void OnEndDrag(PointerEventData eventData)
-        {
-            List<RaycastResult> results = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(eventData, results);
-
-            GridCell targetCell = null;
-            foreach (var result in results)
-            {
-                targetCell = result.gameObject.GetComponent<GridCell>();
-
-                if (targetCell != null) break;
-            }
-
-            if (targetCell != null && !targetCell.IsOccupied)
-            {
-                PlaceToCell(targetCell);
+            if (result != null) {
+                mergeHandler.MergeItems(targetCell, result);
                 return;
             }
-
-            if (targetCell != null && targetCell.IsOccupied)
-            {
-                ItemData result = mergeHandler.TryMergeAndGetResult(itemView.Data, targetCell.Item.Data);
-
-                if (result != null) {
-                    mergeHandler.MergeItems(targetCell, result);
-                    return;
-                }
-            }
-
-            ReturnToOriginalCell();
         }
 
-        public void SetCell(GridCell cell)
-        {
-            originalCell = cell;
-        }
+        ReturnToOriginalCell();
+    }
 
-        private Vector2 GetLocalPointerPosition(PointerEventData eventData)
-        {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvasRect,
-                eventData.position,
-                eventData.pressEventCamera,
-                out Vector2 localPoint
-            );
+    public void SetCell(GridCell cell)
+    {
+        originalCell = cell;
+    }
 
-            return localPoint;
-        }
+    private Vector2 GetLocalPointerPosition(PointerEventData eventData)
+    {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect,
+            eventData.position,
+            eventData.pressEventCamera,
+            out Vector2 localPoint
+        );
 
-        private void PlaceToCell(GridCell targetCell)
-        {
-            transform.SetParent(targetCell.transform);
-            ((RectTransform)transform).anchoredPosition = Vector2.zero;
+        return localPoint;
+    }
 
-            targetCell.SetItem(itemView);
-            SetCell(targetCell);
-        }
+    private void PlaceToCell(GridCell targetCell)
+    {
+        transform.SetParent(targetCell.transform);
+        ((RectTransform)transform).anchoredPosition = Vector2.zero;
 
-        private void ReturnToOriginalCell()
-        {
-            transform.SetParent(originalCell.transform);
-            ((RectTransform)transform).anchoredPosition = Vector2.zero;
+        targetCell.SetItem(itemView);
+        SetCell(targetCell);
+    }
 
-            originalCell.SetItem(itemView);
-        }
+    private void ReturnToOriginalCell()
+    {
+        transform.SetParent(originalCell.transform);
+        ((RectTransform)transform).anchoredPosition = Vector2.zero;
 
-        private void OnDestroy()
-        {
-            gridController.EndAnimation();
-            sequence?.Kill();
-        }
+        originalCell.SetItem(itemView);
+    }
+
+    private void OnDestroy()
+    {
+        gridController.EndAnimation();
+        sequence?.Kill();
     }
 }

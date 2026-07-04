@@ -1,38 +1,36 @@
 using UnityEngine;
-namespace Gameplay
+
+public class MergeHandler : MonoBehaviour
 {
-    public class MergeHandler : MonoBehaviour
+    private AnimatorHandler animator;
+
+    public void Initialize(AnimatorHandler animator)
     {
-        private Animator animator;
+        this.animator = animator;
+    }
 
-        public void Initialize(Animator animator)
+    public ItemData TryMergeAndGetResult(ItemData first, ItemData second)
+    {
+        if (first == null || second == null)
         {
-            this.animator = animator;
+            return null;
         }
 
-        public ItemData TryMergeAndGetResult(ItemData first, ItemData second)
+        if (first != second)
         {
-            if (first == null || second == null)
-            {
-                return null;
-            }
-
-            if (first != second)
-            {
-                return null;
-            }
-
-            return first.NextLevel;
+            return null;
         }
 
-        public void MergeItems(GridCell targetCell, ItemData result)
-        {
-            animator.PlayMerge(
-                GetComponent<ItemView>(),
-                targetCell.Item,
-                () => { targetCell.Item.SetData(result); },
-                () => { Destroy(gameObject); }
-            );
-        }
+        return first.NextLevel;
+    }
+
+    public void MergeItems(GridCell targetCell, ItemData result)
+    {
+        animator.PlayMerge(
+            GetComponent<ItemView>(),
+            targetCell.Item,
+            () => { targetCell.Item.SetData(result); },
+            () => { Destroy(gameObject); }
+        );
     }
 }

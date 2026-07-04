@@ -1,22 +1,19 @@
 using UnityEngine;
 
-namespace Gameplay
+public class GridCell : MonoBehaviour
 {
-    public class GridCell : MonoBehaviour
+    [SerializeField] private ItemView currentItem;
+
+    public bool IsOccupied => currentItem != null;
+    public ItemView Item => currentItem;
+
+    public void SetItem(ItemView item)
     {
-        [SerializeField] private ItemView currentItem;
+        currentItem = item;
+    }
 
-        public bool IsOccupied => currentItem != null;
-        public ItemView Item => currentItem;
-
-        public void SetItem(ItemView item)
-        {
-            currentItem = item;
-        }
-
-        public void ClearItem()
-        {
-            currentItem = null;
-        }
+    public void ClearItem()
+    {
+        currentItem = null;
     }
 }

@@ -2,30 +2,32 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Gameplay
+public class ItemView : MonoBehaviour
 {
-    public class ItemView : MonoBehaviour
+    private ItemData itemData;
+    private LevelManager levelManager;
+
+    [SerializeField] private Image iconImage;
+
+    public ItemData Data => itemData;
+
+    public void Initialize(ItemData itemData, LevelManager levelManager)
     {
-        private ItemData itemData;
+        this.levelManager = levelManager;
 
-        [SerializeField] private Image iconImage;
+        SetData(itemData);
+    }
 
-        public ItemData Data => itemData;
+    private void RefreshView()
+    {
+        iconImage.sprite = itemData.Icon;
+    }
 
-        public void Initialize(ItemData itemData)
-        {
-            SetData(itemData);
-        }
+    public void SetData(ItemData itemData)
+    {
+        this.itemData = itemData;
+        RefreshView();
 
-        private void RefreshView()
-        {
-            iconImage.sprite = itemData.Icon;
-        }
-
-        public void SetData(ItemData itemData)
-        {
-            this.itemData = itemData;
-            RefreshView();
-        }
+        levelManager.OnItemCreated(itemData);
     }
 }

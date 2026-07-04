@@ -1,8 +1,5 @@
-namespace Gameplay
+public enum ItemType
 {
-    public enum ItemType
-    {
-        type1,
-        type2
-    }
+    type1,
+    type2
 }

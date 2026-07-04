@@ -2,108 +2,106 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
-namespace Gameplay
-{    
-    public class GridController : MonoBehaviour
+public class GridController : MonoBehaviour
+{
+    [Header("Grid Settings")]
+    [SerializeField] private int rows = 5;
+    [SerializeField] private int columns = 5;
+
+    [Header("References")]
+    [SerializeField] private GridCell cellPrefab;
+    [SerializeField] private ItemView itemPrefab;
+    [SerializeField] private RectTransform canvasRect;
+    [SerializeField] private ItemData startItem;
+    [SerializeField] private LevelManager levelManager;
+
+    private GridCell[,] cells;
+    private bool isAnimating;
+    private AnimatorHandler animator;
+    private CanvasGroup group;
+
+    public bool IsAnimating => isAnimating;
+
+    private void Awake()
     {
-        [Header("Grid Settings")]
-        [SerializeField] private int rows = 5;
-        [SerializeField] private int columns = 5;
+        animator = GetComponent<AnimatorHandler>();
+        group = GetComponent<CanvasGroup>();
+    }
 
-        [Header("References")]
-        [SerializeField] private GridCell cellPrefab;
-        [SerializeField] private ItemView itemPrefab;
-        [SerializeField] private RectTransform canvasRect;
-        [SerializeField] private ItemData startItem;
+    private void Start()
+    {
+        cells = new GridCell[rows, columns];
+        GenerateGrid();
+    }
 
-        private GridCell[,] cells;
-        private bool isAnimating;
-        private Animator animator;
-        private CanvasGroup group;
-
-        public bool IsAnimating => isAnimating;
-
-        private void Awake()
+    private void GenerateGrid()
+    {
+        for (int row = 0; row < rows; row++)
         {
-            animator = GetComponent<Animator>();
-            group = GetComponent<CanvasGroup>();
-        }
-
-        private void Start()
-        {
-            cells = new GridCell[rows, columns];
-            GenerateGrid();
-        }
-
-        private void GenerateGrid()
-        {
-            for (int row = 0; row < rows; row++)
+            for (int column = 0; column < columns; column++)
             {
-                for (int column = 0; column < columns; column++)
+                GridCell cell = Instantiate(cellPrefab, transform);
+                cells[row, column] = cell;
+            }
+        }
+    }
+
+    public void SpawnRandomItem()
+    {
+        GridCell cell = GetRandomFreeCell();
+
+        if (cell == null)
+        {
+            return;
+        }
+
+        ItemView item = Instantiate(itemPrefab, cell.transform);
+        DragHandler dragHandler = item.GetComponent<DragHandler>();
+
+        item.Initialize(startItem, levelManager);
+        dragHandler.Initialize(canvasRect, this, animator);
+
+        cell.SetItem(item);
+        dragHandler.SetCell(cell);
+    }
+
+    private GridCell GetRandomFreeCell()
+    {
+        List<GridCell> freeCells = new();
+
+        for (int row = 0; row < rows; row++)
+        {
+            for (int column = 0; column < columns; column++)
+            {
+                GridCell cell = cells[row, column];
+
+                if (!cell.IsOccupied)
                 {
-                    GridCell cell = Instantiate(cellPrefab, transform);
-                    cells[row, column] = cell;
+                    freeCells.Add(cell);
                 }
             }
         }
-
-        public void SpawnRandomItem()
+        
+        if (freeCells.Count == 0)
         {
-            GridCell cell = GetRandomFreeCell();
-
-            if (cell == null)
-            {
-                return;
-            }
-
-            ItemView item = Instantiate(itemPrefab, cell.transform);
-            DragHandler dragHandler = item.GetComponent<DragHandler>();
-
-            item.Initialize(startItem);
-            dragHandler.Initialize(canvasRect, this, animator);
-
-            cell.SetItem(item);
-            dragHandler.SetCell(cell);
+            return null;
         }
 
-        private GridCell GetRandomFreeCell()
-        {
-            List<GridCell> freeCells = new();
+        return freeCells[Random.Range(0, freeCells.Count)];
+    }
 
-            for (int row = 0; row < rows; row++)
-            {
-                for (int column = 0; column < columns; column++)
-                {
-                    GridCell cell = cells[row, column];
+    public void BeginAnimation()
+    {
+        isAnimating = true;
+        group.interactable = false;
+        group.blocksRaycasts = false;
+    }
 
-                    if (!cell.IsOccupied)
-                    {
-                        freeCells.Add(cell);
-                    }
-                }
-            }
-            
-            if (freeCells.Count == 0)
-            {
-                return null;
-            }
+    public void EndAnimation()
+    {
+        isAnimating = false;
 
-            return freeCells[Random.Range(0, freeCells.Count)];
-        }
-
-        public void BeginAnimation()
-        {
-            isAnimating = true;
-            group.interactable = false;
-            group.blocksRaycasts = false;
-        }
-
-        public void EndAnimation()
-        {
-            isAnimating = false;
-            
-            group.interactable = true;
-            group.blocksRaycasts = true;
-        }
+        group.interactable = true;
+        group.blocksRaycasts = true;
     }
 }
