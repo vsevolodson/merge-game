@@ -20,13 +20,15 @@ namespace Gameplay
         private Vector2 dragOffset;
         private GridController gridController;
         private Sequence sequence;
+        private Animator animator;
 
         private readonly MergeHandler mergeHandler = new();
 
-        public void Initialize(RectTransform canvasRect, GridController gridController)
+        public void Initialize(RectTransform canvasRect, GridController gridController, Animator animator)
         {
             this.canvasRect = canvasRect;
             this.gridController = gridController;
+            this.animator = animator;
         }
 
         private void Awake()
@@ -133,33 +135,12 @@ namespace Gameplay
 
         private void MergeItems(GridCell targetCell, ItemData result)
         {
-            gridController.BeginAnimation();
-
-            sequence = DOTween.Sequence();
-            sequence.Append(
-                transform.DOMove(
-                    targetCell.Item.transform.position,
-                    0.1f
-                )
+            animator.PlayMerge(
+                GetComponent<ItemView>(),
+                targetCell.Item,
+                () => { targetCell.Item.SetData(result); },
+                () => { Destroy(gameObject); }
             );
-            sequence.Append(
-                transform.DOScale(Vector3.zero, 0.1f)
-            );
-            sequence.AppendCallback(() =>
-            {
-                targetCell.Item.SetData(result);
-            });
-            sequence.Append(
-                targetCell.Item.transform.DOScale(Vector3.one * 1.5f, 0.1f)
-            );
-            sequence.Append(
-                targetCell.Item.transform.DOScale(Vector3.one, 0.1f)
-            );
-            sequence.OnComplete(() =>
-            {
-                gridController.EndAnimation();
-                Destroy(gameObject);
-            });
         }
 
         private void OnDestroy()

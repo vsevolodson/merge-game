@@ -18,8 +18,14 @@ namespace Gameplay
 
         private GridCell[,] cells;
         private bool isAnimating;
+        private Animator animator;
 
         public bool IsAnimating => isAnimating;
+
+        private void Awake()
+        {
+            animator = GetComponent<Animator>();
+        }
 
         private void Start()
         {
@@ -52,7 +58,7 @@ namespace Gameplay
             DragHandler dragHandler = item.GetComponent<DragHandler>();
 
             item.Initialize(startItem);
-            dragHandler.Initialize(canvasRect, this);
+            dragHandler.Initialize(canvasRect, this, animator);
 
             cell.SetItem(item);
             dragHandler.SetCell(cell);
