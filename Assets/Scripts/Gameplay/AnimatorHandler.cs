@@ -7,6 +7,9 @@ public class AnimatorHandler : MonoBehaviour
     private GridController gridController;
     private Sequence sequence;
 
+    private const float AnimationDuration = 0.1f;
+    private const float MergeScaleMultiplier = 1.5f;
+
     private void Awake()
     {
         gridController = GetComponent<GridController>();
@@ -24,21 +27,21 @@ public class AnimatorHandler : MonoBehaviour
         sequence.Append(
             movingItem.transform.DOMove(
                 targetItem.transform.position,
-                0.1f
+                AnimationDuration
             )
         );
         sequence.Append(
-            movingItem.transform.DOScale(Vector3.zero, 0.1f)
+            movingItem.transform.DOScale(Vector3.zero, AnimationDuration)
         );
         sequence.AppendCallback(() =>
         {
             onMerge?.Invoke();
         });
         sequence.Append(
-            targetItem.transform.DOScale(Vector3.one * 1.5f, 0.1f)
+            targetItem.transform.DOScale(Vector3.one * MergeScaleMultiplier, AnimationDuration)
         );
         sequence.Append(
-            targetItem.transform.DOScale(Vector3.one, 0.1f)
+            targetItem.transform.DOScale(Vector3.one, AnimationDuration)
         );
         sequence.OnComplete(() =>
         {
