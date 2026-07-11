@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using DG.Tweening;
 
+[RequireComponent(typeof(ItemView), typeof(MergeHandler))]
 public class DragHandler :
     MonoBehaviour,
     IBeginDragHandler,

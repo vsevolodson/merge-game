@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
+[RequireComponent(typeof(AnimatorHandler), typeof(CanvasGroup))]
 public class GridController : MonoBehaviour
 {
     [Header("Grid Settings")]
@@ -112,7 +113,7 @@ public class GridController : MonoBehaviour
         {
             return;
         }
-        
+
         foreach (GridCell cell in cells)
         {
             if (!cell.IsOccupied)
