@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System;
 
 public class ItemView : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class ItemView : MonoBehaviour
     [SerializeField] private Image iconImage;
 
     public ItemData Data => itemData;
+
+    public static event Action<ItemData> ItemCreated;
 
     public void Initialize(ItemData itemData, LevelManager levelManager)
     {
@@ -28,6 +31,6 @@ public class ItemView : MonoBehaviour
         this.itemData = itemData;
         RefreshView();
 
-        levelManager.OnItemCreated(itemData);
+        ItemCreated?.Invoke(itemData);
     }
 }

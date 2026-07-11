@@ -93,6 +93,7 @@ public class GridController : MonoBehaviour
     public void BeginAnimation()
     {
         isAnimating = true;
+        
         group.interactable = false;
         group.blocksRaycasts = false;
     }
@@ -103,5 +104,24 @@ public class GridController : MonoBehaviour
 
         group.interactable = true;
         group.blocksRaycasts = true;
+    }
+
+    public void ClearGrid()
+    {
+        if (cells == null)
+        {
+            return;
+        }
+        
+        foreach (GridCell cell in cells)
+        {
+            if (!cell.IsOccupied)
+            {
+                continue;
+            }
+
+            Destroy(cell.Item.gameObject);
+            cell.ClearItem();
+        }
     }
 }
