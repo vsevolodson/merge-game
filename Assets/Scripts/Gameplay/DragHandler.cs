@@ -20,7 +20,6 @@ public class DragHandler :
     private Vector2 localPoint;
     private Vector2 dragOffset;
     private GridController gridController;
-    private Sequence sequence;
 
     public void Initialize(RectTransform canvasRect, GridController gridController, AnimatorHandler animator)
     {
@@ -115,11 +114,5 @@ public class DragHandler :
         ((RectTransform)transform).anchoredPosition = Vector2.zero;
 
         originalCell.SetItem(itemView);
-    }
-
-    private void OnDestroy()
-    {
-        gridController.EndAnimation();
-        sequence?.Kill();
     }
 }

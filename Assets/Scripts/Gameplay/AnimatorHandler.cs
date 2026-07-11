@@ -5,6 +5,7 @@ using System;
 public class AnimatorHandler : MonoBehaviour
 {
     private GridController gridController;
+    private Sequence sequence;
 
     private void Awake()
     {
@@ -19,7 +20,7 @@ public class AnimatorHandler : MonoBehaviour
     {
         gridController.BeginAnimation();
 
-        Sequence sequence = DOTween.Sequence();
+        sequence = DOTween.Sequence();
         sequence.Append(
             movingItem.transform.DOMove(
                 targetItem.transform.position,
@@ -44,5 +45,12 @@ public class AnimatorHandler : MonoBehaviour
             gridController.EndAnimation();
             onComplete?.Invoke();
         });
+    }
+
+    private void OnDestroy()
+    {
+        gridController?.EndAnimation();
+
+        sequence?.Kill();
     }
 }
