@@ -1,6 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 
+[RequireComponent(typeof(RectTransform), typeof(CanvasGroup))]
 public class BasePopup : MonoBehaviour
 {
     [Header("Animation")]
@@ -18,7 +19,6 @@ public class BasePopup : MonoBehaviour
 
     [SerializeField] protected CanvasGroup canvasGroup;
     [SerializeField] protected RectTransform window;
-    [SerializeField] protected PopupManager popupManager;
 
     protected bool isOpened;
 
