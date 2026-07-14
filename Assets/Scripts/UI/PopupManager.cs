@@ -9,6 +9,11 @@ public class PopupManager : MonoBehaviour
     {
         if (popupStack.Count > 0)
         {
+            if (popupStack.Peek() == popup)
+            {
+                return;
+            }
+            
             popupStack.Peek().Hide();
         }
 
