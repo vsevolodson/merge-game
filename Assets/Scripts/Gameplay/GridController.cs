@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
@@ -15,24 +16,32 @@ public class GridController : MonoBehaviour
     [SerializeField] private RectTransform canvasRect;
     [SerializeField] private ItemData startItem;
     [SerializeField] private LevelManager levelManager;
+    [SerializeField] private ItemDatabase itemDatabase;
 
     private GridCell[,] cells;
-    private bool isAnimating;
     private AnimatorHandler animator;
-    private CanvasGroup group;
+    private SaveService saveService;
 
-    public bool IsAnimating => isAnimating;
+    public GridCell[,] Cells => cells;
+
+    public event Action SpawnButtonPressed;
 
     private void Awake()
     {
         animator = GetComponent<AnimatorHandler>();
-        group = GetComponent<CanvasGroup>();
+        saveService = new SaveService();
     }
 
     private void Start()
     {
         cells = new GridCell[rows, columns];
         GenerateGrid();
+
+        SaveData saveData = saveService.Load();
+        if (saveData != null)
+        {
+            Restore(saveData);
+        }
     }
 
     private void GenerateGrid()
@@ -56,10 +65,17 @@ public class GridController : MonoBehaviour
             return;
         }
 
+        SpawnItemOnCell(startItem, cell);
+
+        SpawnButtonPressed.Invoke();
+    }
+
+    private void SpawnItemOnCell(ItemData itemData, GridCell cell)
+    {
         ItemView item = Instantiate(itemPrefab, cell.transform);
         DragHandler dragHandler = item.GetComponent<DragHandler>();
 
-        item.Initialize(startItem, levelManager);
+        item.Initialize(itemData, levelManager);
         dragHandler.Initialize(canvasRect, this, animator);
 
         cell.SetItem(item);
@@ -88,23 +104,7 @@ public class GridController : MonoBehaviour
             return null;
         }
 
-        return freeCells[Random.Range(0, freeCells.Count)];
-    }
-
-    public void BeginAnimation()
-    {
-        isAnimating = true;
-        
-        group.interactable = false;
-        group.blocksRaycasts = false;
-    }
-
-    public void EndAnimation()
-    {
-        isAnimating = false;
-
-        group.interactable = true;
-        group.blocksRaycasts = true;
+        return freeCells[UnityEngine.Random.Range(0, freeCells.Count)];
     }
 
     public void ClearGrid()
@@ -123,6 +123,27 @@ public class GridController : MonoBehaviour
 
             Destroy(cell.Item.gameObject);
             cell.ClearItem();
+        }
+    }
+
+    private void Restore(SaveData saveData)
+    {
+        for (int index = 0; index < rows * columns; index++)
+        {
+            CellSaveData cellData = saveData.cells[index];
+
+            if (cellData.itemLevel == 0)
+            {
+                continue;
+            }
+
+            ItemData itemData = itemDatabase.GetItem(cellData.itemLevel);
+
+            int row = index / rows;
+            int column = index - (row * columns);
+            GridCell cell = cells[row, column];
+
+            SpawnItemOnCell(itemData, cell);
         }
     }
 }

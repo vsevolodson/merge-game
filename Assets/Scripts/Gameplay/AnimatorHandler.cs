@@ -4,15 +4,15 @@ using System;
 
 public class AnimatorHandler : MonoBehaviour
 {
-    private GridController gridController;
     private Sequence sequence;
+    private CanvasGroup group;
 
     private const float AnimationDuration = 0.1f;
     private const float MergeScaleMultiplier = 1.5f;
 
     private void Awake()
     {
-        gridController = GetComponent<GridController>();
+        group = GetComponent<CanvasGroup>();
     }
 
     public void PlayMerge(
@@ -21,7 +21,7 @@ public class AnimatorHandler : MonoBehaviour
         Action onMerge,
         Action onComplete)
     {
-        gridController.BeginAnimation();
+        BeginAnimation();
 
         sequence = DOTween.Sequence();
         sequence.Append(
@@ -45,14 +45,26 @@ public class AnimatorHandler : MonoBehaviour
         );
         sequence.OnComplete(() =>
         {
-            gridController.EndAnimation();
+            EndAnimation();
             onComplete?.Invoke();
         });
     }
 
+    public void BeginAnimation()
+    {        
+        group.interactable = false;
+        group.blocksRaycasts = false;
+    }
+
+    public void EndAnimation()
+    {
+        group.interactable = true;
+        group.blocksRaycasts = true;
+    }
+
     private void OnDestroy()
     {
-        gridController?.EndAnimation();
+        EndAnimation();
 
         sequence?.Kill();
     }

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using DG.Tweening;
+using System;
 
 [RequireComponent(typeof(ItemView), typeof(MergeHandler))]
 public class DragHandler :
@@ -20,6 +21,8 @@ public class DragHandler :
     private Vector2 localPoint;
     private Vector2 dragOffset;
     private GridController gridController;
+
+    public static event Action ItemDraged;
 
     public void Initialize(RectTransform canvasRect, GridController gridController, AnimatorHandler animator)
     {
@@ -66,6 +69,7 @@ public class DragHandler :
         if (targetCell != null && !targetCell.IsOccupied)
         {
             PlaceToCell(targetCell);
+            ItemDraged.Invoke();
             return;
         }
 
@@ -75,11 +79,14 @@ public class DragHandler :
 
             if (result != null) {
                 mergeHandler.MergeItems(targetCell, result);
+                ItemDraged.Invoke();
                 return;
             }
         }
 
         ReturnToOriginalCell();
+
+        ItemDraged.Invoke();
     }
 
     public void SetCell(GridCell cell)

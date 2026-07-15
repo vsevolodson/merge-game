@@ -13,6 +13,7 @@ public class ItemView : MonoBehaviour
     public ItemData Data => itemData;
 
     public static event Action<ItemData> ItemCreated;
+    public static event Action<ItemData> ItemChangedOrDestroied;
 
     public void Initialize(ItemData itemData, LevelManager levelManager)
     {
@@ -28,9 +29,16 @@ public class ItemView : MonoBehaviour
 
     public void SetData(ItemData itemData)
     {
+        ItemChangedOrDestroied?.Invoke(this.itemData);
+        
         this.itemData = itemData;
         RefreshView();
 
         ItemCreated?.Invoke(itemData);
+    }
+
+    private void OnDestroy()
+    {
+        ItemChangedOrDestroied?.Invoke(itemData);
     }
 }

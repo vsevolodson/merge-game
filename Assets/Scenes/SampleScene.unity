@@ -2438,6 +2438,7 @@ MonoBehaviour:
   canvasRect: {fileID: 1931008745}
   startItem: {fileID: 11400000, guid: 1932f2ca41842e34b88cc4ab9499dae3, type: 2}
   levelManager: {fileID: 1898120377}
+  itemDatabase: {fileID: 11400000, guid: 88bc0b0d7dee5c94f90b48443b1b90ef, type: 2}
 --- !u!114 &1898120375
 MonoBehaviour:
   m_ObjectHideFlags: 0
