@@ -32,6 +32,7 @@ public class LevelManager : MonoBehaviour
         ItemView.ItemChangedOrDestroied += OnItemChangedOrDestroied;
         DragHandler.ItemDraged += Save;
         gridController.SpawnButtonPressed += Save;
+        MergeHandler.ItemMerged += Save;
     }
 
     private void OnDisable()
@@ -40,6 +41,7 @@ public class LevelManager : MonoBehaviour
         ItemView.ItemChangedOrDestroied -= OnItemChangedOrDestroied;
         DragHandler.ItemDraged -= Save;
         gridController.SpawnButtonPressed -= Save;
+        MergeHandler.ItemMerged -= Save;
     }
 
     public void OnItemCreated(ItemData item)

@@ -1,8 +1,11 @@
 using UnityEngine;
+using System;
 
 public class MergeHandler : MonoBehaviour
 {
     private AnimatorHandler animator;
+
+    public static event Action ItemMerged;
 
     public void Initialize(AnimatorHandler animator)
     {
@@ -30,7 +33,7 @@ public class MergeHandler : MonoBehaviour
             GetComponent<ItemView>(),
             targetCell.Item,
             () => { targetCell.Item.SetData(result); },
-            () => { Destroy(gameObject); }
+            () => { Destroy(gameObject); ItemMerged.Invoke(); }
         );
     }
 }
