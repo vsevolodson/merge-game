@@ -20,7 +20,7 @@ public class GridController : MonoBehaviour
 
     private GridCell[,] cells;
     private AnimatorHandler animator;
-    private SaveService saveService;
+    private bool gridGenerated = false;
 
     public GridCell[,] Cells => cells;
 
@@ -29,23 +29,19 @@ public class GridController : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<AnimatorHandler>();
-        saveService = new SaveService();
     }
 
-    private void Start()
+    private void GenerateGridIfNotYet()
     {
-        cells = new GridCell[rows, columns];
-        GenerateGrid();
-
-        SaveData saveData = saveService.Load();
-        if (saveData != null)
+        if (gridGenerated)
         {
-            Restore(saveData);
+            return;
         }
-    }
 
-    private void GenerateGrid()
-    {
+        gridGenerated = true;
+
+        cells = new GridCell[rows, columns];
+
         for (int row = 0; row < rows; row++)
         {
             for (int column = 0; column < columns; column++)
@@ -144,6 +140,21 @@ public class GridController : MonoBehaviour
             GridCell cell = cells[row, column];
 
             SpawnItemOnCell(itemData, cell);
+        }
+    }
+
+    public void StartNewGame()
+    {
+        GenerateGridIfNotYet();
+    }
+
+    public void Load(SaveData saveData)
+    {
+        GenerateGridIfNotYet();
+
+        if (saveData != null)
+        {
+            Restore(saveData);
         }
     }
 }

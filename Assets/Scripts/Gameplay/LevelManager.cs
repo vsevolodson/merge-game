@@ -9,7 +9,6 @@ public class LevelManager : MonoBehaviour
     private int currentCount;
     private LevelConfig currentLevel;
     private int currentLevelIndex;
-    private SaveService saveService;
 
     public event Action LevelCompleted;
     public event Action<int, int> ProgressChanged;
@@ -17,31 +16,18 @@ public class LevelManager : MonoBehaviour
 
     public bool HasNextLevel => levelDatabase.HasLevel(currentLevelIndex + 1);
     public int CurrentLevelIndex => currentLevelIndex;
-
-    private void Awake()
-    {
-        saveService = new SaveService();
-
-        currentLevelIndex = 0;
-        LoadLevel(currentLevelIndex);
-    }
+    public int CurrentCount => currentCount;
 
     private void OnEnable()
     {
         ItemView.ItemCreated += OnItemCreated;
         ItemView.ItemChangedOrDestroied += OnItemChangedOrDestroied;
-        DragHandler.ItemDraged += Save;
-        gridController.SpawnButtonPressed += Save;
-        MergeHandler.ItemMerged += Save;
     }
 
     private void OnDisable()
     {
         ItemView.ItemCreated -= OnItemCreated;
         ItemView.ItemChangedOrDestroied -= OnItemChangedOrDestroied;
-        DragHandler.ItemDraged -= Save;
-        gridController.SpawnButtonPressed -= Save;
-        MergeHandler.ItemMerged -= Save;
     }
 
     public void OnItemCreated(ItemData item)
@@ -85,18 +71,20 @@ public class LevelManager : MonoBehaviour
 
     private void LoadLevel(int index)
     {
+        currentLevelIndex = index;
+
         gridController.ClearGrid();
 
         currentLevel = levelDatabase.GetLevel(index);
         if (currentLevel == null)
         {
-            Debug.Log("Все уровни пройдены");
+            Debug.Log("Все уровни пройдены или данные неверные");
             return;
         }
 
         currentCount = 0;
         LevelLoaded?.Invoke(currentLevel.TargetItem, currentLevel.TargetCount);
-        ProgressChanged?.Invoke(currentCount, currentLevel.TargetCount);
+        ChangeProgress();
     }
 
     public void LoadNextLevel()
@@ -105,35 +93,14 @@ public class LevelManager : MonoBehaviour
         LoadLevel(currentLevelIndex);
     }
 
-    private void Save()
+    public void StartNewGame()
     {
-        SaveData saveData = CreateSaveData();
-
-        saveService.Save(saveData);
+        currentLevelIndex = 0;
+        LoadLevel(currentLevelIndex);
     }
 
-    private SaveData CreateSaveData()
+    public void Load(SaveData saveData)
     {
-        SaveData saveData = new SaveData();
-
-        saveData.currentLevel = currentLevelIndex;
-
-        foreach (GridCell cell in gridController.Cells)
-        {
-            CellSaveData cellData = new CellSaveData();
-
-            if (cell.IsOccupied)
-            {
-                cellData.itemLevel = cell.Item.Data.Level;
-            }
-            else
-            {
-                cellData.itemLevel = 0;
-            }
-
-            saveData.cells.Add(cellData);
-        }
-
-        return saveData;
+        LoadLevel(saveData.currentLevel);
     }
 }
