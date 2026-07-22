@@ -56,9 +56,11 @@ public class GameManager : MonoBehaviour
         {
             CellSaveData cellData = new CellSaveData();
 
-            if (cell.IsOccupied)
+            ItemData item = gridController.GetItem(cell);
+
+            if (item != null)
             {
-                cellData.itemLevel = cell.Item.Data.Level;
+                cellData.itemLevel = item.Level;
             }
             else
             {
@@ -70,4 +72,4 @@ public class GameManager : MonoBehaviour
 
         return saveData;
     }
-}   
+}

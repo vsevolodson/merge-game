@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(AnimatorHandler), typeof(CanvasGroup))]
 public class GridController : MonoBehaviour
@@ -19,9 +18,13 @@ public class GridController : MonoBehaviour
     [SerializeField] private ItemDatabase itemDatabase;
 
     private GridCell[,] cells;
+    private ItemView[,] itemViews;
+    private GridModel gridModel;
+
     private AnimatorHandler animator;
 
     public GridCell[,] Cells => cells;
+    public GridModel Model => gridModel;
 
     public event Action SpawnButtonPressed;
 
@@ -33,105 +36,18 @@ public class GridController : MonoBehaviour
     private void GenerateGrid()
     {
         cells = new GridCell[rows, columns];
+        itemViews = new ItemView[rows, columns];
+        gridModel = new GridModel(rows, columns);
 
         for (int row = 0; row < rows; row++)
         {
             for (int column = 0; column < columns; column++)
             {
                 GridCell cell = Instantiate(cellPrefab, transform);
+                cell.Initialize(row, column);
+
                 cells[row, column] = cell;
             }
-        }
-    }
-
-    public void SpawnRandomItem()
-    {
-        GridCell cell = GetRandomFreeCell();
-
-        if (cell == null)
-        {
-            return;
-        }
-
-        SpawnItemOnCell(startItem, cell);
-
-        SpawnButtonPressed.Invoke();
-    }
-
-    private void SpawnItemOnCell(ItemData itemData, GridCell cell)
-    {
-        ItemView item = Instantiate(itemPrefab, cell.transform);
-        DragHandler dragHandler = item.GetComponent<DragHandler>();
-
-        item.Initialize(itemData, levelManager);
-        dragHandler.Initialize(canvasRect, this, animator);
-
-        cell.SetItem(item);
-        dragHandler.SetCell(cell);
-    }
-
-    private GridCell GetRandomFreeCell()
-    {
-        List<GridCell> freeCells = new();
-
-        for (int row = 0; row < rows; row++)
-        {
-            for (int column = 0; column < columns; column++)
-            {
-                GridCell cell = cells[row, column];
-
-                if (!cell.IsOccupied)
-                {
-                    freeCells.Add(cell);
-                }
-            }
-        }
-        
-        if (freeCells.Count == 0)
-        {
-            return null;
-        }
-
-        return freeCells[UnityEngine.Random.Range(0, freeCells.Count)];
-    }
-
-    public void ClearGrid()
-    {
-        if (cells == null)
-        {
-            return;
-        }
-
-        foreach (GridCell cell in cells)
-        {
-            if (!cell.IsOccupied)
-            {
-                continue;
-            }
-
-            Destroy(cell.Item.gameObject);
-            cell.ClearItem();
-        }
-    }
-
-    private void Restore(SaveData saveData)
-    {
-        for (int index = 0; index < rows * columns; index++)
-        {
-            CellSaveData cellData = saveData.cells[index];
-
-            if (cellData.itemLevel == 0)
-            {
-                continue;
-            }
-
-            ItemData itemData = itemDatabase.GetItem(cellData.itemLevel);
-
-            int row = index / rows;
-            int column = index - (row * columns);
-            GridCell cell = cells[row, column];
-
-            SpawnItemOnCell(itemData, cell);
         }
     }
 
@@ -145,8 +61,156 @@ public class GridController : MonoBehaviour
         GenerateGrid();
 
         if (saveData != null)
-        {
             Restore(saveData);
+    }
+
+    public void SpawnRandomItem()
+    {
+        GridCell cell = GetRandomFreeCell();
+
+        if (cell == null)
+            return;
+
+        SpawnItemOnCell(startItem, cell);
+
+        SpawnButtonPressed?.Invoke();
+    }
+
+    private void SpawnItemOnCell(ItemData itemData, GridCell cell)
+    {
+        ItemView item = Instantiate(itemPrefab, cell.transform);
+
+        item.Initialize(itemData, levelManager);
+
+        DragHandler drag = item.GetComponent<DragHandler>();
+        drag.Initialize(canvasRect, this, animator);
+        drag.SetCell(cell);
+
+        int row = cell.Row;
+        int column = cell.Column;
+
+        gridModel.SetItem(row, column, itemData);
+        itemViews[row, column] = item;
+    }
+
+    private GridCell GetRandomFreeCell()
+    {
+        List<GridCell> freeCells = new();
+
+        for (int row = 0; row < rows; row++)
+        {
+            for (int column = 0; column < columns; column++)
+            {
+                if (gridModel.IsEmpty(row, column))
+                {
+                    freeCells.Add(cells[row, column]);
+                }
+            }
         }
+
+        if (freeCells.Count == 0)
+            return null;
+
+        return freeCells[UnityEngine.Random.Range(0, freeCells.Count)];
+    }
+
+    public void ClearGrid()
+    {
+        if (cells == null)
+            return;
+
+        for (int row = 0; row < rows; row++)
+        {
+            for (int column = 0; column < columns; column++)
+            {
+                if (gridModel.IsEmpty(row, column))
+                    continue;
+
+                Destroy(itemViews[row, column].gameObject);
+
+                itemViews[row, column] = null;
+                gridModel.ClearItem(row, column);
+            }
+        }
+    }
+
+    private void Restore(SaveData saveData)
+    {
+        for (int index = 0; index < rows * columns; index++)
+        {
+            CellSaveData cellData = saveData.cells[index];
+
+            if (cellData.itemLevel == 0)
+                continue;
+
+            int row = index / columns;
+            int column = index % columns;
+
+            ItemData itemData = itemDatabase.GetItem(cellData.itemLevel);
+
+            SpawnItemOnCell(itemData, cells[row, column]);
+        }
+    }
+
+    public bool IsOccupied(int row, int column)
+    {
+        return gridModel.IsOccupied(row, column);
+    }
+
+    public ItemData GetItem(int row, int column)
+    {
+        return gridModel.GetItem(row, column);
+    }
+
+    public ItemView GetItemView(int row, int column)
+    {
+        return itemViews[row, column];
+    }
+
+    public void RemoveItem(int row, int column)
+    {
+        gridModel.ClearItem(row, column);
+        itemViews[row, column] = null;
+    }
+
+    public void PlaceItem(int row, int column, ItemView item)
+    {
+        gridModel.SetItem(row, column, item.Data);
+        itemViews[row, column] = item;
+    }
+
+    public void UpdateItem(int row, int column, ItemData itemData)
+    {
+        gridModel.SetItem(row, column, itemData);
+    }
+
+    public bool IsOccupied(GridCell cell)
+    {
+        return IsOccupied(cell.Row, cell.Column);
+    }
+
+    public ItemData GetItem(GridCell cell)
+    {
+        return GetItem(cell.Row, cell.Column);
+    }
+
+    public ItemView GetItemView(GridCell cell)
+    {
+        return GetItemView(cell.Row, cell.Column);
+    }
+
+    public void RemoveItem(GridCell cell)
+    {
+        RemoveItem(cell.Row, cell.Column);
+    }
+
+    public void PlaceItem(GridCell cell, ItemView item)
+    {
+        PlaceItem(cell.Row, cell.Column, item);
+    }
+
+    public void UpdateItem(GridCell cell, ItemData item)
+    {
+        UpdateItem(cell.Row, cell.Column, item);
     }
 }

@@ -4,42 +4,47 @@ using System;
 public class MergeHandler : MonoBehaviour
 {
     private AnimatorHandler animator;
+    private GridController gridController;
 
     public static event Action ItemMerged;
 
-    public void Initialize(AnimatorHandler animator)
+    public void Initialize(
+        AnimatorHandler animator,
+        GridController gridController)
     {
         this.animator = animator;
+        this.gridController = gridController;
     }
 
     public ItemData TryMergeAndGetResult(ItemData first, ItemData second)
     {
         if (first == null || second == null)
-        {
             return null;
-        }
 
         if (first != second)
-        {
             return null;
-        }
 
         return first.NextLevel;
     }
 
     public void MergeItems(GridCell targetCell, ItemData result)
     {
-        ItemView item = GetComponent<ItemView>();
+        ItemView movingItem = GetComponent<ItemView>();
+        ItemView targetItem = gridController.GetItemView(targetCell);
+
         animator.PlayMerge(
-            item,
-            targetCell.Item,
-            () => { targetCell.Item.SetData(result); },
-            () => 
-                {
-                    Destroy(gameObject);
-                    item.NotifyChangedOrDestroyed();
-                    ItemMerged.Invoke();
-                }
-        );
+            movingItem,
+            targetItem,
+            () =>
+            {
+                targetItem.SetData(result);
+                gridController.UpdateItem(targetCell, result);
+            },
+            () =>
+            {
+                Destroy(gameObject);
+                movingItem.NotifyChangedOrDestroyed();
+                ItemMerged?.Invoke();
+            });
     }
 }

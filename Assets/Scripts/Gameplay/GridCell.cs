@@ -2,18 +2,15 @@ using UnityEngine;
 
 public class GridCell : MonoBehaviour
 {
-    [SerializeField] private ItemView currentItem;
+    private int row;
+    private int column;
 
-    public bool IsOccupied => currentItem != null;
-    public ItemView Item => currentItem;
+    public int Row => row;
+    public int Column => column;
 
-    public void SetItem(ItemView item)
+    public void Initialize(int row, int column)
     {
-        currentItem = item;
-    }
-
-    public void ClearItem()
-    {
-        currentItem = null;
+        this.row = row;
+        this.column = column;
     }
 }

@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
-using DG.Tweening;
 using System;
 
 [RequireComponent(typeof(ItemView), typeof(MergeHandler))]
@@ -12,23 +11,26 @@ public class DragHandler :
     IEndDragHandler
 {
     private MergeHandler mergeHandler;
-
     private ItemView itemView;
 
     private GridCell originalCell;
     private RectTransform canvasRect;
+    private GridController gridController;
 
     private Vector2 localPoint;
     private Vector2 dragOffset;
-    private GridController gridController;
 
     public static event Action ItemDraged;
 
-    public void Initialize(RectTransform canvasRect, GridController gridController, AnimatorHandler animator)
+    public void Initialize(
+        RectTransform canvasRect,
+        GridController gridController,
+        AnimatorHandler animator)
     {
         this.canvasRect = canvasRect;
         this.gridController = gridController;
-        mergeHandler.Initialize(animator);
+
+        mergeHandler.Initialize(animator, gridController);
     }
 
     private void Awake()
@@ -37,9 +39,15 @@ public class DragHandler :
         mergeHandler = GetComponent<MergeHandler>();
     }
 
+    public void SetCell(GridCell cell)
+    {
+        originalCell = cell;
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
-        originalCell.ClearItem();
+        gridController.RemoveItem(originalCell);
+
         transform.SetParent(canvasRect);
         transform.SetAsLastSibling();
 
@@ -55,43 +63,51 @@ public class DragHandler :
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventData, results);
+        GridCell targetCell = GetTargetCell(eventData);
 
-        GridCell targetCell = null;
-        foreach (var result in results)
+        if (targetCell == null)
         {
-            targetCell = result.gameObject.GetComponent<GridCell>();
-
-            if (targetCell != null) break;
-        }
-
-        if (targetCell != null && !targetCell.IsOccupied)
-        {
-            PlaceToCell(targetCell);
-            ItemDraged.Invoke();
+            ReturnToOriginalCell();
+            ItemDraged?.Invoke();
             return;
         }
 
-        if (targetCell != null && targetCell.IsOccupied)
+        if (!gridController.IsOccupied(targetCell))
         {
-            ItemData result = mergeHandler.TryMergeAndGetResult(itemView.Data, targetCell.Item.Data);
+            PlaceToCell(targetCell);
+            ItemDraged?.Invoke();
+            return;
+        }
 
-            if (result != null) {
-                mergeHandler.MergeItems(targetCell, result);
-                ItemDraged.Invoke();
-                return;
-            }
+        ItemData result = mergeHandler.TryMergeAndGetResult(
+            itemView.Data,
+            gridController.GetItem(targetCell));
+
+        if (result != null)
+        {
+            mergeHandler.MergeItems(targetCell, result);
+            ItemDraged?.Invoke();
+            return;
         }
 
         ReturnToOriginalCell();
-
-        ItemDraged.Invoke();
+        ItemDraged?.Invoke();
     }
 
-    public void SetCell(GridCell cell)
+    private GridCell GetTargetCell(PointerEventData eventData)
     {
-        originalCell = cell;
+        List<RaycastResult> results = new();
+        EventSystem.current.RaycastAll(eventData, results);
+
+        foreach (RaycastResult result in results)
+        {
+            GridCell cell = result.gameObject.GetComponent<GridCell>();
+
+            if (cell != null)
+                return cell;
+        }
+
+        return null;
     }
 
     private Vector2 GetLocalPointerPosition(PointerEventData eventData)
@@ -100,10 +116,9 @@ public class DragHandler :
             canvasRect,
             eventData.position,
             eventData.pressEventCamera,
-            out Vector2 localPoint
-        );
+            out Vector2 point);
 
-        return localPoint;
+        return point;
     }
 
     private void PlaceToCell(GridCell targetCell)
@@ -111,7 +126,7 @@ public class DragHandler :
         transform.SetParent(targetCell.transform);
         ((RectTransform)transform).anchoredPosition = Vector2.zero;
 
-        targetCell.SetItem(itemView);
+        gridController.PlaceItem(targetCell, itemView);
         SetCell(targetCell);
     }
 
@@ -120,6 +135,6 @@ public class DragHandler :
         transform.SetParent(originalCell.transform);
         ((RectTransform)transform).anchoredPosition = Vector2.zero;
 
-        originalCell.SetItem(itemView);
+        gridController.PlaceItem(originalCell, itemView);
     }
 }
