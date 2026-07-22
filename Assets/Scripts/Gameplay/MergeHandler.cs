@@ -7,6 +7,7 @@ public class MergeHandler : MonoBehaviour
     private GridController gridController;
 
     public static event Action ItemMerged;
+    public static event Action<Vector3> MergePerformed;
 
     public void Initialize(
         AnimatorHandler animator,
@@ -44,6 +45,7 @@ public class MergeHandler : MonoBehaviour
             {
                 Destroy(gameObject);
                 movingItem.NotifyChangedOrDestroyed();
+                MergePerformed?.Invoke(targetItem.transform.position);      
                 ItemMerged?.Invoke();
             });
     }
