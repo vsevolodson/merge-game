@@ -20,7 +20,6 @@ public class GridController : MonoBehaviour
 
     private GridCell[,] cells;
     private AnimatorHandler animator;
-    private bool gridGenerated = false;
 
     public GridCell[,] Cells => cells;
 
@@ -31,15 +30,8 @@ public class GridController : MonoBehaviour
         animator = GetComponent<AnimatorHandler>();
     }
 
-    private void GenerateGridIfNotYet()
+    private void GenerateGrid()
     {
-        if (gridGenerated)
-        {
-            return;
-        }
-
-        gridGenerated = true;
-
         cells = new GridCell[rows, columns];
 
         for (int row = 0; row < rows; row++)
@@ -145,12 +137,12 @@ public class GridController : MonoBehaviour
 
     public void StartNewGame()
     {
-        GenerateGridIfNotYet();
+        GenerateGrid();
     }
 
     public void Load(SaveData saveData)
     {
-        GenerateGridIfNotYet();
+        GenerateGrid();
 
         if (saveData != null)
         {

@@ -29,11 +29,17 @@ public class MergeHandler : MonoBehaviour
 
     public void MergeItems(GridCell targetCell, ItemData result)
     {
+        ItemView item = GetComponent<ItemView>();
         animator.PlayMerge(
-            GetComponent<ItemView>(),
+            item,
             targetCell.Item,
             () => { targetCell.Item.SetData(result); },
-            () => { Destroy(gameObject); ItemMerged.Invoke(); }
+            () => 
+                {
+                    Destroy(gameObject);
+                    item.NotifyChangedOrDestroyed();
+                    ItemMerged.Invoke();
+                }
         );
     }
 }

@@ -21,13 +21,13 @@ public class LevelManager : MonoBehaviour
     private void OnEnable()
     {
         ItemView.ItemCreated += OnItemCreated;
-        ItemView.ItemChangedOrDestroied += OnItemChangedOrDestroied;
+        ItemView.ItemChangedOrDestroyed += OnItemChangedOrDestroyed;
     }
 
     private void OnDisable()
     {
         ItemView.ItemCreated -= OnItemCreated;
-        ItemView.ItemChangedOrDestroied -= OnItemChangedOrDestroied;
+        ItemView.ItemChangedOrDestroyed -= OnItemChangedOrDestroyed;
     }
 
     public void OnItemCreated(ItemData item)
@@ -42,7 +42,7 @@ public class LevelManager : MonoBehaviour
         ChangeProgress();
     }
 
-    public void OnItemChangedOrDestroied(ItemData item)
+    public void OnItemChangedOrDestroyed(ItemData item)
     {        
         if (item != currentLevel.TargetItem)
         {
