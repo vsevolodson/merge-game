@@ -185,34 +185,4 @@ public class GridController : MonoBehaviour
     {
         gridModel.SetItem(row, column, itemData);
     }
-
-    public bool IsOccupied(GridCell cell)
-    {
-        return IsOccupied(cell.Row, cell.Column);
-    }
-
-    public ItemData GetItem(GridCell cell)
-    {
-        return GetItem(cell.Row, cell.Column);
-    }
-
-    public ItemView GetItemView(GridCell cell)
-    {
-        return GetItemView(cell.Row, cell.Column);
-    }
-
-    public void RemoveItem(GridCell cell)
-    {
-        RemoveItem(cell.Row, cell.Column);
-    }
-
-    public void PlaceItem(GridCell cell, ItemView item)
-    {
-        PlaceItem(cell.Row, cell.Column, item);
-    }
-
-    public void UpdateItem(GridCell cell, ItemData item)
-    {
-        UpdateItem(cell.Row, cell.Column, item);
-    }
 }

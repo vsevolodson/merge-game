@@ -31,7 +31,7 @@ public class MergeHandler : MonoBehaviour
     public void MergeItems(GridCell targetCell, ItemData result)
     {
         ItemView movingItem = GetComponent<ItemView>();
-        ItemView targetItem = gridController.GetItemView(targetCell);
+        ItemView targetItem = gridController.GetItemView(targetCell.Row, targetCell.Column);
 
         animator.PlayMerge(
             movingItem,
@@ -39,7 +39,7 @@ public class MergeHandler : MonoBehaviour
             () =>
             {
                 targetItem.SetData(result);
-                gridController.UpdateItem(targetCell, result);
+                gridController.UpdateItem(targetCell.Row, targetCell.Column, result);
             },
             () =>
             {

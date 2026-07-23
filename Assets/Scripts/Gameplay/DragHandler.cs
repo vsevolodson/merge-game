@@ -46,7 +46,7 @@ public class DragHandler :
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        gridController.RemoveItem(originalCell);
+        gridController.RemoveItem(originalCell.Row, originalCell.Column);
 
         transform.SetParent(canvasRect);
         transform.SetAsLastSibling();
@@ -72,7 +72,7 @@ public class DragHandler :
             return;
         }
 
-        if (!gridController.IsOccupied(targetCell))
+        if (!gridController.IsOccupied(targetCell.Row, targetCell.Column))
         {
             PlaceToCell(targetCell);
             ItemDraged?.Invoke();
@@ -81,7 +81,7 @@ public class DragHandler :
 
         ItemData result = mergeHandler.TryMergeAndGetResult(
             itemView.Data,
-            gridController.GetItem(targetCell));
+            gridController.GetItem(targetCell.Row, targetCell.Column));
 
         if (result != null)
         {
@@ -126,7 +126,7 @@ public class DragHandler :
         transform.SetParent(targetCell.transform);
         ((RectTransform)transform).anchoredPosition = Vector2.zero;
 
-        gridController.PlaceItem(targetCell, itemView);
+        gridController.PlaceItem(targetCell.Row, targetCell.Column, itemView);
         SetCell(targetCell);
     }
 
@@ -135,6 +135,6 @@ public class DragHandler :
         transform.SetParent(originalCell.transform);
         ((RectTransform)transform).anchoredPosition = Vector2.zero;
 
-        gridController.PlaceItem(originalCell, itemView);
+        gridController.PlaceItem(originalCell.Row, originalCell.Column, itemView);
     }
 }

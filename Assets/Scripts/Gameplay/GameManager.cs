@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
         {
             CellSaveData cellData = new CellSaveData();
 
-            ItemData item = gridController.GetItem(cell);
+            ItemData item = gridController.GetItem(cell.Row, cell.Column);
 
             if (item != null)
             {
