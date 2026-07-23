@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6473548299649467213}
   - component: {fileID: -9218885323206760142}
   - component: {fileID: 9131128355351687844}
+  - component: {fileID: 2933270198073198949}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -115,3 +116,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c6a83fd3d1080a4099521b7ababafd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Gameplay.MergeHandler
+--- !u!114 &2933270198073198949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1676646103280875627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4be6b12b8b287144bba1c290f3af26e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverAnimation
+  hoverScale: 1.1
+  animationDuration: 0.15
