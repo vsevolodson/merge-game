@@ -16,6 +16,8 @@ public class GridController : MonoBehaviour
     [SerializeField] private ItemData startItem;
     [SerializeField] private LevelManager levelManager;
     [SerializeField] private ItemDatabase itemDatabase;
+    [SerializeField] private TrashCell trashCellPrefab;
+    [SerializeField] private Vector2Int trashCellPosition = new(0, 0);
 
     private GridCell[,] cells;
     private ItemView[,] itemViews;
@@ -43,9 +45,17 @@ public class GridController : MonoBehaviour
         {
             for (int column = 0; column < columns; column++)
             {
-                GridCell cell = Instantiate(cellPrefab, transform);
-                cell.Initialize(row, column);
+                GridCell cell;
+                if (row == trashCellPosition.x && column == trashCellPosition.y)
+                {
+                    cell = Instantiate(trashCellPrefab, transform);
+                }
+                else
+                {
+                    cell = Instantiate(cellPrefab, transform);
+                }
 
+                cell.Initialize(row, column);
                 cells[row, column] = cell;
             }
         }
@@ -103,6 +113,11 @@ public class GridController : MonoBehaviour
         {
             for (int column = 0; column < columns; column++)
             {
+                if (cells[row, column] is TrashCell)
+                {
+                    continue;
+                }
+
                 if (gridModel.IsEmpty(row, column))
                 {
                     freeCells.Add(cells[row, column]);
@@ -152,6 +167,11 @@ public class GridController : MonoBehaviour
 
             int row = index / columns;
             int column = index % columns;
+
+            if (cells[row, column] is TrashCell)
+            {
+                continue;
+            }
 
             ItemData itemData = itemDatabase.GetItem(cellData.itemLevel);
 

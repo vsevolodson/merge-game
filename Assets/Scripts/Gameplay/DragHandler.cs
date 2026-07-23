@@ -63,6 +63,12 @@ public class DragHandler :
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (IsTrashCell(eventData))
+        {
+            RemoveItem();
+            return;
+        }
+
         GridCell targetCell = GetTargetCell(eventData);
 
         if (targetCell == null)
@@ -136,5 +142,28 @@ public class DragHandler :
         ((RectTransform)transform).anchoredPosition = Vector2.zero;
 
         gridController.PlaceItem(originalCell.Row, originalCell.Column, itemView);
+    }
+
+    private void RemoveItem()
+    {
+        Destroy(gameObject);
+        itemView.NotifyChangedOrDestroyed();
+        ItemDraged?.Invoke();
+    }
+
+    private bool IsTrashCell(PointerEventData eventData)
+    {
+        List<RaycastResult> results = new();
+        EventSystem.current.RaycastAll(eventData, results);
+
+        foreach (RaycastResult result in results)
+        {
+            if (result.gameObject.GetComponent<TrashCell>() != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
