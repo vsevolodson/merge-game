@@ -65,7 +65,6 @@ public class MergeSoundController : MonoBehaviour
 
     public void Load(SaveData saveData)
     {
-        Debug.Log(saveData.soundEnabled);
         if (saveData == null)
         {
             StartNewGame();

@@ -10,8 +10,6 @@ public class SaveService
 
         PlayerPrefs.SetString(SaveKey, json);
         PlayerPrefs.Save();
-
-        Debug.LogWarning("saving");
     }
 
     public SaveData Load()
