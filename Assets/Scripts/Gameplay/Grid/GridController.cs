@@ -138,6 +138,11 @@ public class GridController : MonoBehaviour
 
     private void Restore(SaveData saveData)
     {
+        if (saveData.cells.Count != rows * columns)
+        {
+            return;
+        }
+
         for (int index = 0; index < rows * columns; index++)
         {
             CellSaveData cellData = saveData.cells[index];
