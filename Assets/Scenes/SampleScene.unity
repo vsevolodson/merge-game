@@ -2984,6 +2984,8 @@ MonoBehaviour:
   startItem: {fileID: 11400000, guid: 1932f2ca41842e34b88cc4ab9499dae3, type: 2}
   levelManager: {fileID: 1898120377}
   itemDatabase: {fileID: 11400000, guid: 88bc0b0d7dee5c94f90b48443b1b90ef, type: 2}
+  trashCellPrefab: {fileID: -5957587685119559368, guid: 8a2f4ccbcf0e0bf42ab9b5e41839fc55, type: 3}
+  trashCellPosition: {x: 0, y: 0}
 --- !u!114 &1898120375
 MonoBehaviour:
   m_ObjectHideFlags: 0
