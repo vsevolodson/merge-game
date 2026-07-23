@@ -101,6 +101,9 @@ public class LevelManager : MonoBehaviour
 
     public void Load(SaveData saveData)
     {
-        LoadLevel(saveData.currentLevel);
+        if (saveData != null)
+        {
+            LoadLevel(saveData.currentLevel);
+        }
     }
 }

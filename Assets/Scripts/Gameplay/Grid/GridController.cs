@@ -61,7 +61,9 @@ public class GridController : MonoBehaviour
         GenerateGrid();
 
         if (saveData != null)
+        {
             Restore(saveData);
+        }
     }
 
     public void SpawnRandomItem()

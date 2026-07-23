@@ -4,6 +4,7 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private GridController gridController;
     [SerializeField] private LevelManager levelManager;
+    [SerializeField] private MergeSoundController mergeSoundController;
 
     private SaveService saveService;
 
@@ -17,12 +18,14 @@ public class GameManager : MonoBehaviour
         {
             levelManager.StartNewGame();
             gridController.StartNewGame();
+            mergeSoundController.StartNewGame();
 
             return;
         }
 
         levelManager.Load(saveData);
         gridController.Load(saveData);
+        mergeSoundController.Load(saveData);
     }
 
     private void OnEnable()
@@ -30,6 +33,7 @@ public class GameManager : MonoBehaviour
         DragHandler.ItemDraged += Save;
         gridController.SpawnButtonPressed += Save;
         MergeHandler.ItemMerged += Save;
+        mergeSoundController.SoundEnabledSwitched += Save;
     }
 
     private void OnDisable()
@@ -37,6 +41,7 @@ public class GameManager : MonoBehaviour
         DragHandler.ItemDraged -= Save;
         gridController.SpawnButtonPressed -= Save;
         MergeHandler.ItemMerged -= Save;
+        mergeSoundController.SoundEnabledSwitched -= Save;
     }
 
     private void Save()
@@ -51,6 +56,8 @@ public class GameManager : MonoBehaviour
         SaveData saveData = new SaveData();
 
         saveData.currentLevel = levelManager.CurrentLevelIndex;
+
+        saveData.soundEnabled = mergeSoundController.SoundEnabled;Debug.Log(saveData.soundEnabled);
 
         foreach (GridCell cell in gridController.Cells)
         {
