@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
 
         saveData.currentLevel = levelManager.CurrentLevelIndex;
 
-        saveData.soundEnabled = mergeSoundController.SoundEnabled;Debug.Log(saveData.soundEnabled);
+        saveData.soundEnabled = mergeSoundController.SoundEnabled;
 
         foreach (GridCell cell in gridController.Cells)
         {
