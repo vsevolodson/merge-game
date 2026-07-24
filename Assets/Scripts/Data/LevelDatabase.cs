@@ -22,6 +22,6 @@ public class LevelDatabase : ScriptableObject
 
     public bool HasLevel(int index)
     {
-        return index >= 0 && index < levels.Count;;
+        return index >= 0 && index < levels.Count;
     }
 }
