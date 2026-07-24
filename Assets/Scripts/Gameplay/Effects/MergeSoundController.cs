@@ -63,18 +63,19 @@ public class MergeSoundController : MonoBehaviour
         soundButton.colors = colors;
     }
 
-    public void Load(SaveData saveData)
+    public bool Load(SaveData saveData)
     {
         if (saveData == null)
         {
-            StartNewGame();
-            return;
+            return false;
         }
         
         if (saveData.soundEnabled != soundEnabled)
         {
             SwitchSoundEnabled();
         }
+
+        return true;
     }
 
     public void StartNewGame()

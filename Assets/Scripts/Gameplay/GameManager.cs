@@ -14,18 +14,20 @@ public class GameManager : MonoBehaviour
 
         SaveData saveData = saveService.Load();
 
-        if (saveData == null)
+        if (saveData == null ||
+            !levelManager.Load(saveData) ||
+            !gridController.Load(saveData) ||
+            !mergeSoundController.Load(saveData))
         {
+            Debug.Log("будет создано новое сохранение");
+            saveService.DeleteSave();
+            
             levelManager.StartNewGame();
             gridController.StartNewGame();
             mergeSoundController.StartNewGame();
 
             return;
         }
-
-        levelManager.Load(saveData);
-        gridController.Load(saveData);
-        mergeSoundController.Load(saveData);
     }
 
     private void OnEnable()

@@ -69,7 +69,7 @@ public class LevelManager : MonoBehaviour
         LevelCompleted?.Invoke();
     }
 
-    private void LoadLevel(int index)
+    private bool LoadLevel(int index)
     {
         currentLevelIndex = index;
 
@@ -78,13 +78,14 @@ public class LevelManager : MonoBehaviour
         currentLevel = levelDatabase.GetLevel(index);
         if (currentLevel == null)
         {
-            Debug.Log("Все уровни пройдены или данные неверные");
-            return;
+            return false;
         }
 
         currentCount = 0;
         LevelLoaded?.Invoke(currentLevel.TargetItem, currentLevel.TargetCount);
         ChangeProgress();
+
+        return true;
     }
 
     public void LoadNextLevel()
@@ -99,11 +100,13 @@ public class LevelManager : MonoBehaviour
         LoadLevel(currentLevelIndex);
     }
 
-    public void Load(SaveData saveData)
+    public bool Load(SaveData saveData)
     {
-        if (saveData != null)
+        if (saveData == null)
         {
-            LoadLevel(saveData.currentLevel);
+            return false;
         }
+
+        return LoadLevel(saveData.currentLevel);
     }
 }

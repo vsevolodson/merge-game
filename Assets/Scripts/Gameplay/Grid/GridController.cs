@@ -66,14 +66,15 @@ public class GridController : MonoBehaviour
         GenerateGrid();
     }
 
-    public void Load(SaveData saveData)
+    public bool Load(SaveData saveData)
     {
-        GenerateGrid();
-
-        if (saveData != null)
+        if (saveData == null)
         {
-            Restore(saveData);
+            return false;
         }
+        
+        GenerateGrid();
+        return Restore(saveData);
     }
 
     public void SpawnRandomItem()
@@ -151,11 +152,11 @@ public class GridController : MonoBehaviour
         }
     }
 
-    private void Restore(SaveData saveData)
+    private bool Restore(SaveData saveData)
     {
-        if (saveData.cells.Count != rows * columns)
+        if (saveData?.cells?.Count != rows * columns)
         {
-            return;
+            return false;
         }
 
         for (int index = 0; index < rows * columns; index++)
@@ -175,8 +176,15 @@ public class GridController : MonoBehaviour
 
             ItemData itemData = itemDatabase.GetItem(cellData.itemLevel);
 
+            if (itemData == null) 
+            {
+                continue;
+            }
+
             SpawnItemOnCell(itemData, cells[row, column]);
         }
+
+        return true;
     }
 
     public bool IsOccupied(int row, int column)
