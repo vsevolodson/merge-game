@@ -20,7 +20,7 @@ public class DragHandler :
     private Vector2 localPoint;
     private Vector2 dragOffset;
 
-    public static event Action ItemDraged;
+    public static event Action ItemDragged;
 
     public void Initialize(
         RectTransform canvasRect,
@@ -74,14 +74,14 @@ public class DragHandler :
         if (targetCell == null)
         {
             ReturnToOriginalCell();
-            ItemDraged?.Invoke();
+            ItemDragged?.Invoke();
             return;
         }
 
         if (!gridController.IsOccupied(targetCell.Row, targetCell.Column))
         {
             PlaceToCell(targetCell);
-            ItemDraged?.Invoke();
+            ItemDragged?.Invoke();
             return;
         }
 
@@ -92,12 +92,12 @@ public class DragHandler :
         if (result != null)
         {
             mergeHandler.MergeItems(targetCell, result);
-            ItemDraged?.Invoke();
+            ItemDragged?.Invoke();
             return;
         }
 
         ReturnToOriginalCell();
-        ItemDraged?.Invoke();
+        ItemDragged?.Invoke();
     }
 
     private GridCell GetTargetCell(PointerEventData eventData)
@@ -148,7 +148,7 @@ public class DragHandler :
     {
         Destroy(gameObject);
         itemView.NotifyChangedOrDestroyed();
-        ItemDraged?.Invoke();
+        ItemDragged?.Invoke();
     }
 
     private bool IsTrashCell(PointerEventData eventData)

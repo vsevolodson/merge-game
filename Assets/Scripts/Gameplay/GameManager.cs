@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("будет создано новое сохранение");
             saveService.DeleteSave();
-            
+
             levelManager.StartNewGame();
             gridController.StartNewGame();
             mergeSoundController.StartNewGame();
@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
 
     private void OnEnable()
     {
-        DragHandler.ItemDraged += Save;
+        DragHandler.ItemDragged += Save;
         gridController.SpawnButtonPressed += Save;
         MergeHandler.ItemMerged += Save;
         mergeSoundController.SoundEnabledSwitched += Save;
@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
 
     private void OnDisable()
     {
-        DragHandler.ItemDraged -= Save;
+        DragHandler.ItemDragged -= Save;
         gridController.SpawnButtonPressed -= Save;
         MergeHandler.ItemMerged -= Save;
         mergeSoundController.SoundEnabledSwitched -= Save;

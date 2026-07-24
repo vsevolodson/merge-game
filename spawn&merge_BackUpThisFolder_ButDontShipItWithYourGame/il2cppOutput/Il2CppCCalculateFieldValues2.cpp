@@ -8707,7 +8707,7 @@ struct RuntimeTextSettings_tAD653990258C757806DC9F1263C7526323CFDFD7_StaticField
 };
 struct DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721_StaticFields
 {
-	Action_tD00B0A84D7945E50C2DFFC28EFEE6ED44ED2AD07* ___ItemDraged;
+	Action_tD00B0A84D7945E50C2DFFC28EFEE6ED44ED2AD07* ___ItemDragged;
 };
 struct ItemView_t9B4BA5CA93881CC207F520448CDD1FFD8CB9A108_StaticFields
 {
@@ -10368,7 +10368,7 @@ IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable6736[4] =
 	static_cast<int32_t>(offsetof(AnimatorHandler_tFFE069907119FE9C737A2544F992EF5D24240B7C, ___sequence)),static_cast<int32_t>(offsetof(AnimatorHandler_tFFE069907119FE9C737A2544F992EF5D24240B7C, ___group)),0,0,};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable6737[8] = 
 {
-	static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___mergeHandler)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___itemView)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___originalCell)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___canvasRect)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___gridController)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___localPoint)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___dragOffset)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721_StaticFields, ___ItemDraged)),};
+	static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___mergeHandler)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___itemView)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___originalCell)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___canvasRect)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___gridController)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___localPoint)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721, ___dragOffset)),static_cast<int32_t>(offsetof(DragHandler_tBE894553A1028C5FF5977E7B3F76489C9021D721_StaticFields, ___ItemDragged)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable6738[1] = 
 {
 	static_cast<int32_t>(offsetof(DestroyAfterParticles_tC8F45120EFAB28A1C5EAA5B67765083F68886025, ___particles)),};
