@@ -20,9 +20,6 @@ public class VictoryPanelController : MonoBehaviour
 
     private void OpenPopup()
     {
-        /*panel.SetActive(true);
-
-        nextButton.gameObject.SetActive(levelManager.HasNextLevel);*/
         popupManager.Show(popup);
 
         nextButton.gameObject.SetActive(levelManager.HasNextLevel);
@@ -30,7 +27,6 @@ public class VictoryPanelController : MonoBehaviour
 
     public void Hide()
     {
-        //panel.SetActive(false);
         popupManager.Hide();
     }
 }
