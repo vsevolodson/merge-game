@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5fc6667c1b264e4595f3dde480795b7, type: 3}
-  m_Name: Item_Level3
+  m_Name: Item_Level4
   m_EditorClassIdentifier: Assembly-CSharp::Gameplay.ItemData
-  icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
-  level: 3
-  nextLevel: {fileID: 11400000, guid: 6ec29f11518cb3146af4d40bb8f97a50, type: 2}
+  icon: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
+  level: 4
+  nextLevel: {fileID: 0}
